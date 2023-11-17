@@ -7,7 +7,7 @@ django.setup()
 
 # Import your models
 from main_app.models import Product, Category, Customer, Order, OrderProduct
-
+from django.db.models import Sum
 
 # Create and check models
 def add_records_to_database():
@@ -62,11 +62,19 @@ def add_records_to_database():
 # print(add_records_to_database())
 
 
-print('All Products:')
-print(Product.objects.all())
-print()
-print('All Available Products:')
-print(Product.objects.available_products())
-print()
-print('All Available Food Products:')
-print(Product.objects.available_products_in_category("Food"))
+def product_quantity_ordered():
+    total_qty_ordered = (
+        Product.objects
+        .annotate(total_quantity_ordered=Sum('orderproduct__quantity'))
+        .exclude(total_quantity_ordered=0)
+        .order_by('-total_quantity_ordered')
+    )
+
+    summary_strings = [
+        f"Quantity ordered of {product.name}: {product.total_quantity_ordered}"
+        for product in total_qty_ordered
+    ]
+
+    summary = "\n".join(summary_strings)
+
+    return summary
