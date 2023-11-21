@@ -78,3 +78,33 @@ def product_quantity_ordered():
     summary = "\n".join(summary_strings)
 
     return summary
+
+
+def ordered_products_per_customer():
+    # Retrieve all orders with related customer and products in ascending order by order ID
+    orders = Order.objects.select_related('customer').prefetch_related('products__category', 'products').order_by('id')
+
+    result = []
+
+    for order in orders:
+        order_id = order.id
+        customer_username = order.customer.username
+
+        result.append(f"Order ID: {order_id}, Customer: {customer_username}")
+
+        # Retrieve products for the current order (fetched in the previous queries)
+        order_products = order.products.all()
+
+        for order_product in order_products:
+            product_name = order_product.name
+            category_name = order_product.category.name
+
+            result.append(f"- Product: {product_name}, Category: {category_name}")
+
+    # Join the entire result list and return as a single string
+    return '\n'.join(result)
+
+
+
+
+print(ordered_products_per_customer())
