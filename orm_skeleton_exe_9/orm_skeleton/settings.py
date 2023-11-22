@@ -99,6 +99,13 @@ LOGGING = {
         'handlers': ['console'],
         'level': 'DEBUG',  # Set the desired log level (DEBUG, INFO, WARNING, ERROR, CRITICAL)
     },
+    'loggers':{
+        'django.db.backends': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+            'propagate': False,
+        }
+    }
 }
 
 
